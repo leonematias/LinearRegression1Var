@@ -20,18 +20,20 @@ import javax.swing.JComponent;
  */
 public class Plot2D {
     
-    private final static int SCREEN_MIN_X = 20;
-    private final static int SCREEN_MIN_Y = WIN_HEIGHT - 150;
-    private final static int SCREEN_MAX_X = WIN_WIDTH - 20;
-    private final static int SCREEN_MAX_Y = 20;
-    
     private Stroke normalStroke;
     private Stroke boldStroke;
     private Stroke dottedStroke;
     private RenderPanel renderPanel;
     private BufferedImage renderImg;
     private Graphics2D renderG;
-    private Dimension graphDim;                                                                                                    
+    private Dimension graphDim;                 
+    
+    private int screenMinX;
+    private int screenMinY;
+    private int screenMaxX;
+    private int screenMaxY;
+    
+    
     
     public Plot2D(int width, int height) {
         normalStroke = new BasicStroke();
@@ -45,7 +47,11 @@ public class Plot2D {
      * Init graphics
      */
     private void init() {
-
+        this.screenMinX = 20;
+        this.screenMinY = this.graphDim.height - 20;
+        this.screenMaxX = this.graphDim.width - 20;
+        this.screenMaxY = 20;
+        
     }
     
     /**
@@ -56,8 +62,26 @@ public class Plot2D {
         //Draw axis
         g.setColor(Color.BLACK);
         g.setStroke(boldStroke);
-        g.drawLine(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MAX_X, SCREEN_MIN_Y);
-        g.drawLine(SCREEN_MIN_X, SCREEN_MIN_Y, SCREEN_MIN_X, SCREEN_MAX_Y);
+        g.drawLine(screenMinX, screenMinY, screenMaxX, screenMinY);
+        g.drawLine(screenMinX, screenMinY, screenMinX, screenMaxY);
+        
+        //Draw arrows on axis
+        g.drawLine(screenMaxX, screenMinY, screenMaxX - 10, screenMinY - 5);
+        g.drawLine(screenMaxX, screenMinY, screenMaxX - 10, screenMinY + 5);
+        g.drawLine(screenMinX, screenMaxY, screenMinX - 5, screenMaxY + 10);
+        g.drawLine(screenMinX, screenMaxY, screenMinX + 5, screenMaxY + 10);
+        
+        //Draw X labels
+        for (int i = 1; i < 12; i++) {
+            int x = screenMinX + i * 100;
+            g.drawLine(x, screenMinY + 5, x, screenMinY - 5);
+        }
+        
+        //Draw Y labels
+        for (int i = 1; i < 6; i++) {
+            int y = screenMinY - i * 100;
+            g.drawLine(screenMinX - 5, y, screenMinX + 5, y);
+        }
 
     }
     

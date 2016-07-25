@@ -41,7 +41,6 @@ public class UI {
     private JFrame frame;
     private Plot2D plot2d;
     private JTextArea logArea;
-    private JSpinner spinner;
     
     public static void main(String[] args) {
         new UI();
@@ -90,8 +89,6 @@ public class UI {
      * Compute clusters
      */
     private void doRegression() {
-        int clustersCount = ((SpinnerNumberModel)spinner.getModel()).getNumber().intValue();
-        
         plot2d.refresh();
     }
     
