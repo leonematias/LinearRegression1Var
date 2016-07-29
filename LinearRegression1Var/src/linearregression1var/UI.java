@@ -89,6 +89,14 @@ public class UI {
      * Compute clusters
      */
     private void doRegression() {
+        
+        Random rand = new Random();
+        for (int i = 0; i < 100; i++) {
+            plot2d.drawPoint(new Vector2(rand.nextInt(200), rand.nextInt(200)));
+        }
+        
+        plot2d.drawLine(new Vector2(0, 50), new Vector2(300, 350));
+        
         plot2d.refresh();
     }
     
