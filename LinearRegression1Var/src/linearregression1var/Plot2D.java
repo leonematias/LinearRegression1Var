@@ -22,7 +22,9 @@ import javax.swing.JComponent;
  */
 public class Plot2D {
     
-    private final static int POINT_RAD = 2;
+    private final static int POINT_RAD = 5;
+    private final static int X_OFFSET = 40;
+    private final static int Y_OFFSET = 30;
     
     private Stroke normalStroke;
     private Stroke boldStroke;
@@ -36,9 +38,7 @@ public class Plot2D {
     private int screenMinY;
     private int screenMaxX;
     private int screenMaxY;
-    
-    private List<Vector2> points;
-    private List<Line> lines;
+
     
     public Plot2D(int width, int height) {
         normalStroke = new BasicStroke();
@@ -46,40 +46,26 @@ public class Plot2D {
         dottedStroke = new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f);
         
         renderPanel = new RenderPanel();
-        this.points = new ArrayList<>();
-        this.lines = new ArrayList<>();
     }
     
     /**
      * Init graphics
      */
     private void init() {
-        this.screenMinX = 40;
-        this.screenMinY = this.graphDim.height - 40;
-        this.screenMaxX = this.graphDim.width - 20;
-        this.screenMaxY = 20;
+        this.screenMinX = X_OFFSET;
+        this.screenMinY = this.graphDim.height - Y_OFFSET;
+        this.screenMaxX = this.graphDim.width - X_OFFSET;
+        this.screenMaxY = Y_OFFSET;
         
     }
     
-    public void drawPoint(Vector2 p) {
-        this.points.add(p);
-    }
-    
-    public void drawLine(Vector2 start, Vector2 end) {
-        this.lines.add(new Line(start, end));
-    }
-    
-    public void clear() {
-        this.points.clear();
-        this.lines.clear();
-        refresh();
-    }
-     
-    /**
-     * Main render method
-     */
-    private void render(Graphics2D g) {
-
+    public void reset() {
+        Graphics2D g = renderG;
+        
+        //Clear
+        g.setPaint(Color.WHITE);
+        g.fillRect(0, 0, graphDim.width, graphDim.height);
+        
         //Draw axis
         g.setColor(Color.BLACK);
         g.setStroke(boldStroke);
@@ -93,40 +79,89 @@ public class Plot2D {
         g.drawLine(screenMinX, screenMaxY, screenMinX + 5, screenMaxY + 10);
         
         //Draw X labels
-        for (int i = 1; i < 12; i++) {
-            int x = screenMinX + i * 100;
+        for (int i = 1; i < 22; i++) {
+            int x = screenMinX + i * 50;
             g.drawLine(x, screenMinY + 5, x, screenMinY - 5);
-            g.drawString(String.valueOf(i * 100), x, screenMinY + 15);
+            g.drawString(String.valueOf(i * 50), x - 10, screenMinY + 20);
         }
         
         //Draw Y labels
-        for (int i = 1; i < 6; i++) {
-            int y = screenMinY - i * 100;
+        for (int i = 1; i < 11; i++) {
+            int y = screenMinY - i * 50;
             g.drawLine(screenMinX - 5, y, screenMinX + 5, y);
-            g.drawString(String.valueOf(i * 100), screenMinX - 15, y - 5);
-        }
-        
-        //Draw points
-        g.setColor(Color.BLUE);
-        g.setStroke(normalStroke);
-        for (Vector2 p : points) {
-            g.fillOval((int)(p.X - POINT_RAD), (int)(p.Y - POINT_RAD), POINT_RAD * 2, POINT_RAD * 2);
-        }
-
-        //Draw lines
-        g.setColor(Color.GREEN);
-        g.setStroke(boldStroke);
-        for (Line l : lines) {
-            g.drawLine((int)l.start.X, (int)l.start.Y, (int)l.end.X, (int)l.end.Y);
+            g.drawString(String.valueOf(i * 50), screenMinX - 30, y + 5);
         }
     }
+     
+
+    public void render() {
+        renderPanel.repaint();
+    }
+    
+    public void drawPoint(float x, float y, Color color, int size) {
+        Graphics2D g = renderG;
+        g.setColor(color);
+        g.setStroke(normalStroke);
+        g.fillOval(xToScreen(x) - size, yToScreen(y) - size, size * 2, size * 2);
+    }
+    
+    public void drawPoint(float x, float y) {
+        drawPoint(x, y, Color.BLUE, POINT_RAD);
+    }
+    
+    public void drawPoint(Vector2 p, Color color, int size) {
+        drawPoint(p.X, p.Y, color, size);
+    }
+    
+    public void drawPoint(Vector2 p) {
+        drawPoint(p, Color.BLUE, POINT_RAD);
+    }
+    
+    public void drawSegment(float startX, float startY, float endX, float endY, Color color) {
+        Graphics2D g = renderG;
+        g.setColor(color);
+        g.setStroke(boldStroke);
+        g.drawLine(xToScreen(startX), yToScreen(startY), xToScreen(endX), yToScreen(endY));
+    }
+    
+    public void drawSegment(float startX, float startY, float endX, float endY) {
+        drawSegment(startX, startY, endX, endY, Color.GREEN);
+    }
+    
+    public void drawSegment(Vector2 start, Vector2 end) {
+        drawSegment(start.X, start.Y, end.X, end.Y);
+    }
+    
+    public void drawSegment(Vector2 start, Vector2 end, Color color) {
+        drawSegment(start.X, start.Y, end.X, end.Y, color);
+    }
+    
+    public void drawLine(float m, float b) {
+        drawLine(m, b, Color.GREEN);
+    }
+    
+    /**
+     * y = mx + b
+     */
+    public void drawLine(float m, float b, Color color) {
+        float startX = 0;
+        float startY = b;
+        float endX = screenMaxX;
+        float endY = m * endX + b;
+        drawSegment(startX, startY, endX, endY, color);
+    }
+    
+    private int xToScreen(float x) {
+        return (int)(x + X_OFFSET);
+    }
+    
+    private int yToScreen(float y) {
+        return (int)(screenMinY - y);
+    }
+    
     
     public Component getComponent() {
         return this.renderPanel;
-    }
-    
-    public void refresh() {
-        this.renderPanel.repaint();
     }
     
     private void onMouseClicked(int x, int y) {
@@ -155,12 +190,7 @@ public class Plot2D {
                 renderG = renderImg.createGraphics();
                 init();
             }
-            
-            renderG.setPaint(Color.WHITE);
-            renderG.fillRect(0, 0, graphDim.width, graphDim.height);
-            
-            render(renderG);
-            
+
             g.drawImage(renderImg, 0, 0, this);
         }
 
@@ -185,16 +215,5 @@ public class Plot2D {
         public void mouseExited(MouseEvent e) {
         }
     }
-    
-    private class Line {
-        public Vector2 start;
-        public Vector2 end;
 
-        public Line(Vector2 start, Vector2 end) {
-            this.start = start;
-            this.end = end;
-        }
-        
-        
-    }
 }
