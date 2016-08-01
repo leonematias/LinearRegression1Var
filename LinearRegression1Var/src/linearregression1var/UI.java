@@ -118,7 +118,7 @@ public class UI {
             plot2d.drawPoint(point);
         }
         
-        Vector2 line = linearRegression.computeLine(points, 0.001f, 1000);
+        Vector2 line = linearRegression.computeLine(points, 0.0001f, 10000);
         plot2d.drawLine(line.Y, line.X, Color.RED);
         log("Regression line: y = " + line.Y + "x + " + line.X);
         
