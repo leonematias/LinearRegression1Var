@@ -25,6 +25,7 @@ public class Plot2D {
     private final static int POINT_RAD = 5;
     private final static int X_OFFSET = 40;
     private final static int Y_OFFSET = 30;
+    private final static float SCALE = 10;
     
     private Stroke normalStroke;
     private Stroke boldStroke;
@@ -82,14 +83,14 @@ public class Plot2D {
         for (int i = 1; i < 22; i++) {
             int x = screenMinX + i * 50;
             g.drawLine(x, screenMinY + 5, x, screenMinY - 5);
-            g.drawString(String.valueOf(i * 50), x - 10, screenMinY + 20);
+            g.drawString(String.valueOf(i * 5), x - 10, screenMinY + 20);
         }
         
         //Draw Y labels
         for (int i = 1; i < 11; i++) {
             int y = screenMinY - i * 50;
             g.drawLine(screenMinX - 5, y, screenMinX + 5, y);
-            g.drawString(String.valueOf(i * 50), screenMinX - 30, y + 5);
+            g.drawString(String.valueOf(i * 5), screenMinX - 30, y + 5);
         }
     }
      
@@ -152,11 +153,11 @@ public class Plot2D {
     }
     
     private int xToScreen(float x) {
-        return (int)(x + X_OFFSET);
+        return (int)(x * SCALE + X_OFFSET);
     }
     
     private int yToScreen(float y) {
-        return (int)(screenMinY - y);
+        return (int)(screenMinY - y * SCALE);
     }
     
     

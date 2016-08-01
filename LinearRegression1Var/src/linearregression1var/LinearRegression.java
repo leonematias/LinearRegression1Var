@@ -9,7 +9,7 @@ import java.util.List;
  * @author Matias Leone
  */
 public class LinearRegression {
-    
+   
     private float rangeX;
     private float rangeY;
     private float avgX;
@@ -22,7 +22,6 @@ public class LinearRegression {
     public Vector2 computeLine(List<Vector2> points, float alpha, int iterations) {
         
         Vector2 theta = new Vector2(0.1f, 0.1f);
-        //List<Vector2> scaledPoints = featureScaling(points);
         
         float m = points.size();
         float alphaDivM = alpha / m;
@@ -39,11 +38,7 @@ public class LinearRegression {
             theta.X = theta.X - (alphaDivM * diff0);
             theta.Y = theta.Y - (alphaDivM * diff1);
         }
-        
- 
-        //theta.X = scaleBackX(theta.X);
-        //theta.Y = scaleBackX(theta.Y);
-        //theta.Y *= 10;
+     
         
         return theta;
     }
